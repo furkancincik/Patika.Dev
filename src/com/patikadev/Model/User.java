@@ -1,12 +1,10 @@
 package com.patikadev.Model;
 
 import com.patikadev.Helper.DBConnector;
+import com.patikadev.Helper.Helper;
 
 import javax.swing.plaf.nimbus.State;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -97,16 +95,64 @@ public class User {
 
     public static boolean add(String name,String username,String password,String type){
         String sqlQuery = "INSERT INTO users (name, username, password, type) VALUES (?,?,?,?)";
-
+        User findUser = User.getFetch(username);
+        if (findUser != null){
+            Helper.showMsg("Bu kullanıcı adı kullanılıyor.Başka bir kullanıcı adı giriniz.");
+            return false;
+        }
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
             pst.setString(1,name);
             pst.setString(2,username);
             pst.setString(3,password);
             pst.setString(4,type);
-            return pst.executeUpdate() != -1;
+            int result = pst.executeUpdate();
+
+            if (result == -1){
+                Helper.showMsg("error");
+            }
+            return result != -1;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+        return true;
+    }
+
+
+    public static User getFetch(String username){
+        User obj = null;
+
+        String sqlQuery = "SELECT * FROM users WHERE username = ?";
+
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setString(1,username);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()){
+                obj = new User();
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPassword(rs.getString("password"));
+                obj.setType(rs.getString("type"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+
+    public static boolean delete(int id){
+        String sqlQuery = "DELETE FROM users WHERE id = ?";
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setInt(1,id);
+            return pst.executeUpdate() != -1 ;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return true;
     }

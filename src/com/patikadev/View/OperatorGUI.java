@@ -5,6 +5,8 @@ import com.patikadev.Model.Operator;
 import com.patikadev.Model.User;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +26,8 @@ public class OperatorGUI extends JFrame {
     private JPasswordField fld_user_password;
     private JComboBox cmb_user_type;
     private JButton btn_user_add;
+    private JTextField fld_user_id;
+    private JButton btn_user_delete;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
 
@@ -44,27 +48,33 @@ public class OperatorGUI extends JFrame {
         lbl_welcome.setText("Hoşgeldin\t" + operator.getName());
 
         // ModelUserList
-        mdl_user_list = new DefaultTableModel();
+        mdl_user_list = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0) {
+                    return false;
+                }
+                return super.isCellEditable(row, column);
+            }
+        };
         Object[] col_user_list = {"ID", "Ad Soyad", "Kullanıcı Adı", "Şifre", "Üyelik Tipi"};
         mdl_user_list.setColumnIdentifiers(col_user_list);
-        /*
-        Object[] firstRow = {"1","XYZ","XYZ","123","Operator"};
-        mdl_user_list.addRow(firstRow);
-         */
 
-        for (User obj : User.getList()) {
-            Object[] row = new Object[col_user_list.length];
-            row[0] = obj.getId();
-            row[1] = obj.getName();
-            row[2] = obj.getUsername();
-            row[3] = obj.getPassword();
-            row[4] = obj.getType();
-            mdl_user_list.addRow(row);
+        row_user_list = new Object[col_user_list.length];
 
-        }
+        loadUserModel();
 
         tbl_user_list.setModel(mdl_user_list);
         tbl_user_list.getTableHeader().setReorderingAllowed(false);
+
+        tbl_user_list.getSelectionModel().addListSelectionListener(e -> {
+            try {
+                String select_user_id = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString();
+                fld_user_id.setText(select_user_id);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        });
 
         btn_user_add.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_user_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)) {
@@ -76,11 +86,42 @@ public class OperatorGUI extends JFrame {
                 String type = cmb_user_type.getSelectedItem().toString();
                 if (User.add(name, username, password, type)) {
                     Helper.showMsg("done");
-                }else {
+                    loadUserModel();
+                    fld_user_name.setText(null);
+                    fld_user_username.setText(null);
+                    fld_user_password.setText(null);
+                }
+            }
+        });
+        btn_user_delete.addActionListener(e -> {
+            if (Helper.isFieldEmpty(fld_user_id)) {
+                Helper.showMsg("fill");
+            } else {
+                int user_id = Integer.parseInt(fld_user_id.getText());
+                if (User.delete(user_id)) {
+                    Helper.showMsg("done");
+                    loadUserModel();
+                } else {
                     Helper.showMsg("error");
                 }
             }
         });
+    }
+
+    public void loadUserModel() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_user_list.getModel();
+        clearModel.setRowCount(0);
+
+        for (User obj : User.getList()) {
+            int i = 0;
+            row_user_list[i++] = obj.getId();
+            row_user_list[i++] = obj.getName();
+            row_user_list[i++] = obj.getUsername();
+            row_user_list[i++] = obj.getPassword();
+            row_user_list[i++] = obj.getType();
+            mdl_user_list.addRow(row_user_list);
+
+        }
     }
 
     public static void main(String[] args) {
