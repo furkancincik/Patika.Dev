@@ -1,5 +1,5 @@
 package com.patikadev.Model;
 
-public class Operator extends Users{
+public class Operator extends User {
 
 }

@@ -6,8 +6,8 @@ import java.awt.*;
 public class Helper {
 
     public static void setLayout() throws RuntimeException {
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()){
-            if ("Nimbus".equals(info.getName())){
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
                 try {
                     UIManager.setLookAndFeel(info.getClassName());
                 } catch (ClassNotFoundException e) {
@@ -23,7 +23,6 @@ public class Helper {
             }
         }
     }
-
 
 
     public static int screenCenterPoint(String axis, Dimension size) {
@@ -42,7 +41,37 @@ public class Helper {
     }
 
 
+    public static boolean isFieldEmpty(JTextField field) {
+        return field.getText().trim().isEmpty();
+    }
 
+    public static void showMsg(String str) {
+        optionPaneTR();
+        String msg;
+        String title;
+        switch (str) {
+            case "fill":
+                msg = "Lütfen tüm alanları doldurunuz.";
+                title = "Hata!";
+                break;
+            case "done":
+                msg = "İşlem Başarılı.";
+                title = "Sonuç";
+                break;
+            case "error":
+                msg = "Bir hata oluştu.";
+                title = "Hata!";
+                break;
+            default:
+                msg = str;
+                title = "Mesaj";
+        }
 
+        JOptionPane.showMessageDialog(null,msg,title,JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void optionPaneTR(){
+        UIManager.put("OptionPane.okButtonText","Tamam");
+    }
 
 }
