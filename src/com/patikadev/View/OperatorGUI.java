@@ -7,6 +7,8 @@ import com.patikadev.Model.User;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
@@ -130,9 +132,12 @@ public class OperatorGUI extends JFrame {
             String username = fld_sh_user_username.getText();
             String type = cmb_sh_user_type.getSelectedItem().toString();
 
-            String sqlQuery = User.searchQuery(name,username,type);
+            String sqlQuery = User.searchQuery(name,username,type).toString();
             ArrayList<User> searchingUser = User.searchUserList(sqlQuery);
             loadUserModel(searchingUser);
+        });
+        btn_logout.addActionListener(e -> {
+            dispose(); 
         });
     }
 

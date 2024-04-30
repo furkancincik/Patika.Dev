@@ -199,17 +199,18 @@ public class User {
         return userList;
     }
 
-    public static String searchQuery(String name, String username, String type) {
-        String sqlQuery = "SELECT * FROM users WHERE name LIKE ? AND username LIKE ? AND type LIKE = ?";
+    public static PreparedStatement searchQuery(String name, String username, String type) {
+        String sqlQuery = "SELECT * FROM users WHERE name LIKE ? AND username LIKE ? AND type LIKE ?";
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
             pst.setString(1,"%" + name + "%");
             pst.setString(2,"%" + username + "%");
             pst.setString(3,"%" + type + "%");
+            return pst;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            return null;
         }
-        return sqlQuery;
     }
 
 
