@@ -19,7 +19,6 @@ public class User {
     }
 
 
-
     public User(int id, String name, String username, String password, String type) {
         this.id = id;
         this.name = name;
@@ -69,7 +68,6 @@ public class User {
     }
 
 
-
     public static ArrayList<User> getList() {
         ArrayList<User> userList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users;";
@@ -77,7 +75,7 @@ public class User {
         try {
             Statement st = DBConnector.getInstance().createStatement();
             ResultSet rs = st.executeQuery(sqlQuery);
-            while (rs.next()){
+            while (rs.next()) {
                 obj = new User();
                 obj.setId(rs.getInt("id"));
                 obj.setName(rs.getString("name"));
@@ -93,22 +91,22 @@ public class User {
     }
 
 
-    public static boolean add(String name,String username,String password,String type){
+    public static boolean add(String name, String username, String password, String type) {
         String sqlQuery = "INSERT INTO users (name, username, password, type) VALUES (?,?,?,?)";
         User findUser = User.getFetch(username);
-        if (findUser != null){
+        if (findUser != null) {
             Helper.showMsg("Bu kullanıcı adı kullanılıyor.Başka bir kullanıcı adı giriniz.");
             return false;
         }
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
-            pst.setString(1,name);
-            pst.setString(2,username);
-            pst.setString(3,password);
-            pst.setString(4,type);
+            pst.setString(1, name);
+            pst.setString(2, username);
+            pst.setString(3, password);
+            pst.setString(4, type);
             int result = pst.executeUpdate();
 
-            if (result == -1){
+            if (result == -1) {
                 Helper.showMsg("error");
             }
             return result != -1;
@@ -120,16 +118,16 @@ public class User {
     }
 
 
-    public static User getFetch(String username){
+    public static User getFetch(String username) {
         User obj = null;
 
         String sqlQuery = "SELECT * FROM users WHERE username = ?";
 
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
-            pst.setString(1,username);
+            pst.setString(1, username);
             ResultSet rs = pst.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 obj = new User();
                 obj.setId(rs.getInt("id"));
                 obj.setName(rs.getString("name"));
@@ -145,18 +143,74 @@ public class User {
     }
 
 
-    public static boolean delete(int id){
+    public static boolean delete(int id) {
         String sqlQuery = "DELETE FROM users WHERE id = ?";
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
-            pst.setInt(1,id);
-            return pst.executeUpdate() != -1 ;
+            pst.setInt(1, id);
+            return pst.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
 
+
+    public static boolean update(int id, String name, String username, String password, String type) {
+        String sqlQuery = "UPDATE users SET name = ?, username=?, password=?,type=? WHERE id=?";
+        User findUser = User.getFetch(username);
+        if (findUser != null && findUser.getId() != id) {
+            Helper.showMsg("Bu kullanıcı adı kullanılıyor.Başka bir kullanıcı adı giriniz.");
+            return false;
+        }
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setString(1, name);
+            pst.setString(2, username);
+            pst.setString(3, password);
+            pst.setString(4, type);
+            pst.setInt(5, id);
+            return pst.executeUpdate() != -1;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
+    }
+
+
+    public static ArrayList<User> searchUserList(String sqlQuery) {
+        ArrayList<User> userList = new ArrayList<>();
+        User obj;
+        try {
+            Statement st = DBConnector.getInstance().createStatement();
+            ResultSet rs = st.executeQuery(sqlQuery);
+            while (rs.next()) {
+                obj = new User();
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPassword(rs.getString("password"));
+                obj.setType(rs.getString("type"));
+                userList.add(obj);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return userList;
+    }
+
+    public static String searchQuery(String name, String username, String type) {
+        String sqlQuery = "SELECT * FROM users WHERE name LIKE ? AND username LIKE ? AND type LIKE = ?";
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setString(1,"%" + name + "%");
+            pst.setString(2,"%" + username + "%");
+            pst.setString(3,"%" + type + "%");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return sqlQuery;
+    }
 
 
 }
