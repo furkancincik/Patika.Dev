@@ -142,6 +142,30 @@ public class User {
         return obj;
     }
 
+    public static User getFetch(int id) {
+        User obj = null;
+
+        String sqlQuery = "SELECT * FROM users WHERE id = ?";
+
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setInt(1, id);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                obj = new User();
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPassword(rs.getString("password"));
+                obj.setType(rs.getString("type"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
 
     public static boolean delete(int id) {
         String sqlQuery = "DELETE FROM users WHERE id = ?";

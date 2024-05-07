@@ -39,6 +39,17 @@ public class OperatorGUI extends JFrame {
     private JPanel pnl_patika_add;
     private JTextField fld_patika_name;
     private JButton btn_patika_add;
+    private JPanel pnl_user_top;
+    private JPanel pnl_course_list;
+    private JScrollPane scrl_course_list;
+    private JTable tbl_course_list;
+    private JPanel pnl_course_add;
+    private JTextField textField1;
+    private JLabel fld_course_name;
+    private JTextField fld_course_lang;
+    private JComboBox cmb_course_patika;
+    private JComboBox cmb_course_user;
+    private JButton btn_course_add;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
     private DefaultTableModel mdl_patika_list;
@@ -60,6 +71,10 @@ public class OperatorGUI extends JFrame {
         setVisible(true);
 
         lbl_welcome.setText("Hoşgeldin\t" + operator.getName());
+        Font existingFont = lbl_welcome.getFont();
+        Font newFont = new Font(existingFont.getName(), Font.BOLD, existingFont.getSize() + 2);
+        lbl_welcome.setFont(newFont);
+
 
         // ModelUserList
         mdl_user_list = new DefaultTableModel() {
@@ -199,10 +214,11 @@ public class OperatorGUI extends JFrame {
             ArrayList<User> searchingUser = User.searchUserList(sqlQuery);
             loadUserModel(searchingUser);
         });
+
         btn_logout.addActionListener(e -> {
             dispose();
         });
-
+        
 
         btn_patika_add.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_patika_name)) {
@@ -268,7 +284,7 @@ public class OperatorGUI extends JFrame {
 
         Operator op = new Operator();
         op.setId(1);
-        op.setName("furkan");
+        op.setName("Furkan");
         op.setUsername("furkan");
         op.setPassword("1234");
         op.setType("operator");
