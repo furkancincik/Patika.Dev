@@ -9,10 +9,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
@@ -81,11 +78,15 @@ public class OperatorGUI extends JFrame {
         tbl_user_list.setModel(mdl_user_list);
         tbl_user_list.getTableHeader().setReorderingAllowed(false);
         tbl_user_list.getSelectionModel().addListSelectionListener(e -> {
-            try {
-                String select_user_id = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString();
-                fld_user_id.setText(select_user_id);
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            if (!e.getValueIsAdjusting()) {
+                if (tbl_user_list.getSelectedRow() != -1) {
+                    try {
+                        String select_user_id = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString();
+                        fld_user_id.setText(select_user_id);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
             }
         });
         tbl_user_list.getModel().addTableModelListener(e -> {
@@ -114,8 +115,25 @@ public class OperatorGUI extends JFrame {
         updateMenu.addActionListener(e -> {
             int select_id = Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(), 0).toString());
             UpdatePatikaGUI updateGUI = new UpdatePatikaGUI(Patika.getFetch(select_id));
+            updateGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadPatikaModel();
+                }
+            });
         });
 
+        deleteMenu.addActionListener(e -> {
+            if (Helper.confirm("sure")){
+                int select_id = Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(), 0).toString());
+                if (Patika.delete(select_id)){
+                    Helper.showMsg("done");
+                    loadPatikaModel();
+                }else {
+                    Helper.showMsg("error");
+                }
+            }
+        });
 
         mdl_patika_list = new DefaultTableModel();
         Object[] col_patika_list = {"ID", "Patika Adı"};
@@ -161,12 +179,14 @@ public class OperatorGUI extends JFrame {
             if (Helper.isFieldEmpty(fld_user_id)) {
                 Helper.showMsg("fill");
             } else {
-                int user_id = Integer.parseInt(fld_user_id.getText());
-                if (User.delete(user_id)) {
-                    Helper.showMsg("done");
-                    loadUserModel();
-                } else {
-                    Helper.showMsg("error");
+                if (Helper.confirm("sure")) {
+                    int user_id = Integer.parseInt(fld_user_id.getText());
+                    if (User.delete(user_id)) {
+                        Helper.showMsg("done");
+                        loadUserModel();
+                    } else {
+                        Helper.showMsg("error");
+                    }
                 }
             }
         });

@@ -6,8 +6,6 @@ import com.patikadev.Helper.Helper;
 import com.patikadev.Model.Patika;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,12 +54,6 @@ public class UpdatePatikaGUI extends JFrame {
             e.printStackTrace();
         }
         return obj;
-    }
-
-    public static void main(String[] args) {
-        Helper.setLayout();
-        Patika p = new Patika(1,"Frontend");
-        UpdatePatikaGUI up = new UpdatePatikaGUI(p);
     }
 
 
