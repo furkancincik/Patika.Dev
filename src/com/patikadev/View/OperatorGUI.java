@@ -137,6 +137,7 @@ public class OperatorGUI extends JFrame {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     loadPatikaModel();
+                    loadPatikaCombo();
                 }
             });
         });
@@ -147,6 +148,7 @@ public class OperatorGUI extends JFrame {
                 if (Patika.delete(select_id)) {
                     Helper.showMsg("done");
                     loadPatikaModel();
+                    loadPatikaCombo();
                 } else {
                     Helper.showMsg("error");
                 }
@@ -248,6 +250,7 @@ public class OperatorGUI extends JFrame {
                 if (Patika.add(fld_patika_name.getText())) {
                     Helper.showMsg("done");
                     loadPatikaModel();
+                    loadPatikaCombo();
                     fld_patika_name.setText(null);
                 } else {
                     Helper.showMsg("error");
