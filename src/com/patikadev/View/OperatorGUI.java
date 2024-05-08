@@ -302,6 +302,7 @@ public class OperatorGUI extends JFrame {
         }
     }
 
+    //public voi
     public void loadUserModel(ArrayList<User> list) {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_user_list.getModel();
         clearModel.setRowCount(0);
