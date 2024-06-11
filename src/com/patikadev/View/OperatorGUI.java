@@ -45,8 +45,8 @@ public class OperatorGUI extends JFrame {
     private JScrollPane scrl_course_list;
     private JTable tbl_course_list;
     private JPanel pnl_course_add;
-    private JTextField textField1;
-    private JLabel fld_course_name;
+    private JTextField fld_course_name;
+    private JLabel JlabeldersAdi;
     private JTextField fld_course_lang;
     private JComboBox cmb_course_patika;
     private JComboBox cmb_course_user;
@@ -119,6 +119,8 @@ public class OperatorGUI extends JFrame {
                     Helper.showMsg("done");
                 }
                 loadUserModel();
+                loadEducatorCombo();
+                loadCourseModel();
             }
         });
         // ## UserList
@@ -138,6 +140,7 @@ public class OperatorGUI extends JFrame {
                 public void windowClosed(WindowEvent e) {
                     loadPatikaModel();
                     loadPatikaCombo();
+                    loadCourseModel();
                 }
             });
         });
@@ -149,6 +152,7 @@ public class OperatorGUI extends JFrame {
                     Helper.showMsg("done");
                     loadPatikaModel();
                     loadPatikaCombo();
+                    loadCourseModel();
                 } else {
                     Helper.showMsg("error");
                 }
@@ -186,33 +190,39 @@ public class OperatorGUI extends JFrame {
         mdl_course_list.setColumnIdentifiers(col_courseList);
         row_course_list = new Object[col_courseList.length];
 
-        loadCourseList();
+        loadCourseModel();
 
         tbl_course_list.setModel(mdl_course_list);
         tbl_course_list.getColumnModel().getColumn(0).setMinWidth(75);
         tbl_course_list.getTableHeader().setReorderingAllowed(false);
 
+        cmb_course_patika.addItem(new Item(1,"1.Eleman"));
+
         loadPatikaCombo();
+        loadEducatorCombo();
 
         // ## CourseList
 
         btn_user_add.addActionListener(e -> {
-            if (Helper.isFieldEmpty(fld_user_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)) {
+            if (Helper.isFieldEmpty(fld_course_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)) {
                 Helper.showMsg("fill");
             } else {
                 String name = fld_user_name.getText();
                 String username = fld_user_username.getText();
-                String password = fld_user_password.getText();
+                String password = fld_user_password.getPassword().toString();
                 String type = cmb_user_type.getSelectedItem().toString();
                 if (User.add(name, username, password, type)) {
                     Helper.showMsg("done");
                     loadUserModel();
+                    loadEducatorCombo();
                     fld_user_name.setText(null);
                     fld_user_username.setText(null);
                     fld_user_password.setText(null);
+                    cmb_user_type.setToolTipText(null);
                 }
             }
         });
+
         btn_user_delete.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_user_id)) {
                 Helper.showMsg("fill");
@@ -222,6 +232,8 @@ public class OperatorGUI extends JFrame {
                     if (User.delete(user_id)) {
                         Helper.showMsg("done");
                         loadUserModel();
+                        loadEducatorCombo();
+                        loadCourseModel();
                     } else {
                         Helper.showMsg("error");
                     }
@@ -257,9 +269,25 @@ public class OperatorGUI extends JFrame {
                 }
             }
         });
+        btn_course_add.addActionListener(e -> {
+            Item patikaItem = (Item) cmb_course_patika.getSelectedItem();
+            Item userItem = (Item) cmb_course_user.getSelectedItem();
+            if (Helper.isFieldEmpty(fld_course_name) || Helper.isFieldEmpty(fld_course_lang)){
+                Helper.showMsg("fill");
+            }else {
+                if (Course.add(userItem.getKey(),patikaItem.getKey(), fld_course_name.getText(),fld_course_lang.getText())){
+                    Helper.showMsg("done");
+                    loadCourseModel();
+                    fld_course_lang.setText(null);
+                    fld_course_name.setText(null);
+                }else {
+                    Helper.showMsg("error");
+                }
+            }
+        });
     }
 
-    private void loadCourseList() {
+    private void loadCourseModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_course_list.getModel();
         clearModel.setRowCount(0);
         int i = 0;
@@ -302,7 +330,6 @@ public class OperatorGUI extends JFrame {
         }
     }
 
-    //public voi
     public void loadUserModel(ArrayList<User> list) {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_user_list.getModel();
         clearModel.setRowCount(0);
@@ -323,6 +350,15 @@ public class OperatorGUI extends JFrame {
         cmb_course_patika.removeAllItems();
         for (Patika obj : Patika.getList()){
             cmb_course_patika.addItem(new Item(obj.getId(),obj.getName()));
+        }
+    }
+
+    public void loadEducatorCombo(){
+        cmb_course_user.removeAllItems();
+        for (User obj : User.getList()){
+            if (obj.getType().equals("educator")){
+                cmb_course_user.addItem(new Item(obj.getId(),obj.getName()));
+            }
         }
     }
 

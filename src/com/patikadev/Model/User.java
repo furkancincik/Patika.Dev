@@ -169,9 +169,14 @@ public class User {
 
     public static boolean delete(int id) {
         String sqlQuery = "DELETE FROM users WHERE id = ?";
+        ArrayList<Course> courseList = Course.getListByUser(id);
+        for (Course c : courseList){
+            Course.delete(c.getId());
+        }
         try {
             PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
             pst.setInt(1, id);
+
             return pst.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();

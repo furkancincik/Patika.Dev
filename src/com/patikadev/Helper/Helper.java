@@ -45,6 +45,12 @@ public class Helper {
         return field.getText().trim().isEmpty();
     }
 
+    public static boolean isFieldEmpty(JPasswordField field) {
+        return new String(field.getPassword()).trim().isEmpty();
+    }
+
+
+
     public static void showMsg(String str) {
         optionPaneTR();
         String msg;
