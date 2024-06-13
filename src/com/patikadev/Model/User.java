@@ -167,6 +167,37 @@ public class User {
     }
 
 
+    public static User getFetch(String username, String pass) {
+        User obj = null;
+        String sqlQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+        try {
+            PreparedStatement pst = DBConnector.getInstance().prepareStatement(sqlQuery);
+            pst.setString(1, username);
+            pst.setString(2, pass);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                String userType = rs.getString("type");
+                if ("operator".equals(userType)) {
+                    obj = new Operator();
+                } else {
+                    obj = new User();
+                }
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPassword(rs.getString("password"));
+                obj.setType(userType);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+
+
     public static boolean delete(int id) {
         String sqlQuery = "DELETE FROM users WHERE id = ?";
         ArrayList<Course> courseList = Course.getListByUser(id);

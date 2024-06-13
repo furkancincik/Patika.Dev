@@ -209,7 +209,7 @@ public class OperatorGUI extends JFrame {
             } else {
                 String name = fld_user_name.getText();
                 String username = fld_user_username.getText();
-                String password = fld_user_password.getPassword().toString();
+                String password = fld_user_password.getText();
                 String type = cmb_user_type.getSelectedItem().toString();
                 if (User.add(name, username, password, type)) {
                     Helper.showMsg("done");
